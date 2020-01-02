@@ -40,8 +40,6 @@ private:
 	void DrawPoo(int  x, int y);
 	void DrawGameOver(int x, int y);
 	void DrawTitle(int x, int y);
-	int ClampSreenX(int x, int width);
-	int ClampSreenY(int x, int height);
 	bool IsCollidng(int x0, int y0, int width0, int height0,
 		            int x1 ,int y1, int width1,int height1);
 	/********************************/
