@@ -28,3 +28,19 @@ void Poo::Update()
 		y = (Graphics::ScreenHeight - 1) - heigth;
 	}
 }
+
+void Poo::ProcessConsumption(int dudex, int dudey, int dudewidth, int dudeheight)
+{
+	const int duderight = dudex + dudewidth;
+	const int dudebottom = dudey + dudeheight;
+	const int pooright = x + width;
+	const int poobottom = y + heigth;
+
+	if (duderight >= x &&
+		dudex <= pooright &&
+		dudebottom >= y &&
+		dudey <= poobottom)
+	{
+		isEaten = true;
+	}
+}

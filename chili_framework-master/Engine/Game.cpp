@@ -81,18 +81,10 @@ void Game::UpdateModel()
 		poo1.Update();
 		poo2.Update();
 
-		if (IsCollidng(dude.x, dude.y, dude.width, dude.height, poo0.x, poo0.y, poo0.width, poo0.heigth))
-		{
-			poo0.isEaten = true;
-		}
-		if (IsCollidng(dude.x, dude.y, dude.width, dude.height, poo1.x, poo1.y, poo1.width, poo1.heigth))
-		{
-			poo1.isEaten = true;
-		}
-		if (IsCollidng(dude.x, dude.y, dude.width, dude.height, poo2.x, poo2.y, poo2.width, poo2.heigth))
-		{
-			poo2.isEaten = true;
-		}
+		poo0.ProcessConsumption(dude.x, dude.y, dude.width, dude.height);
+		poo1.ProcessConsumption(dude.x, dude.y, dude.width, dude.height);
+		poo2.ProcessConsumption(dude.x, dude.y, dude.width, dude.height);
+
 	}
 	else
 	{
@@ -2829,21 +2821,6 @@ void Game::DrawTitle(int x, int y)
 	gfx.PutPixel(32 + x, 8 + y, 0, 146, 14);
 	gfx.PutPixel(33 + x, 8 + y, 0, 146, 14);
 
-}
-
-bool Game::IsCollidng(int x0, int y0, int width0, int height0,
-	                   int x1, int y1, int width1, int height1)
-{
-	const int right0 = x0 + width0;
-	const int bottom0 = y0 + height0;
-	const int right1 = x1 + width1;
-	const int bottom1 = y1 + height1;
-
-	return 
-		right0 >= x1 &&
-		x0 <=right1 &&
-		bottom0 >=y1 &&
-		y0 <= bottom1;
 }
 
 void Game::ComposeFrame()
