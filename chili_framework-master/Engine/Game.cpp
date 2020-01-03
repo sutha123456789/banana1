@@ -31,12 +31,20 @@ Game::Game( MainWindow& wnd )
 	std::mt19937 rng(rd());
 	std::uniform_int_distribution<int>xDist(0,770);
 	std::uniform_int_distribution<int>yDist(0, 570);
-	poo0X = xDist(rng);
-	poo0Y = yDist(rng);
-	poo1X = xDist(rng);
-	poo1Y = yDist(rng);
-	poo2X = xDist(rng);
-	poo2Y = yDist(rng);
+	poo0.x = xDist(rng);
+	poo0.y = yDist(rng);
+	poo1.x = xDist(rng);
+	poo1.y = yDist(rng);
+	poo2.x = xDist(rng);
+	poo2.y = yDist(rng);
+
+	poo0.vx = 1;
+	poo0.vy = 1;
+	poo1.vx = -1;
+	poo1.vy = 1;
+	poo2.vx = 1;
+	poo2.vy = -1;
+
 }
 
 void Game::Go()
@@ -53,84 +61,37 @@ void Game::UpdateModel()
 	{
 		if (wnd.kbd.KeyIsPressed(VK_RIGHT))
 		{
-			dudeX += 1;
+			dude.x += 1;
 		}
 		if (wnd.kbd.KeyIsPressed(VK_LEFT))
 		{
-			dudeX -= 1;
+			dude.x -= 1;
 		}
 		if (wnd.kbd.KeyIsPressed(VK_DOWN))
 		{
-			dudeY += 1;
+			dude.y += 1;
 		}
 		if (wnd.kbd.KeyIsPressed(VK_UP))
 		{
-			dudeY -= 1;
+			dude.y -= 1;
 		}
-		dudeX = ClampSreenX(dudeX, dudeWidth);
-		dudeY = ClampSreenY(dudeY, dudeHieght);
+		dude.ClampToSreen();
 
-		poo0X += poo0vx;
-		poo0Y += poo0vy;
-		poo1X += poo1vx;
-		poo1Y += poo1vy;
-		poo2X += poo2vx;
-		poo2Y += poo2vy;
+		poo0.Update();
+		poo1.Update();
+		poo2.Update();
 
+		if (IsCollidng(dude.x, dude.y, dude.width, dude.height, poo0.x, poo0.y, poo0.width, poo0.heigth))
 		{
-			const int poo0Xold = poo0X;
-			const int poo0Yold = poo0Y;
-			poo0X = ClampSreenX(poo0X, pooWidth);
-			if(poo0X !=poo0Xold)
-			{
-				poo0vx = -poo0vx;
-			}
-			poo0Y = ClampSreenY(poo0Y, pooHieght);
-			if(poo0Y !=poo0Yold)
-			{
-				poo0vy = -poo0vy;
-			}
+			poo0.isEaten = true;
 		}
+		if (IsCollidng(dude.x, dude.y, dude.width, dude.height, poo1.x, poo1.y, poo1.width, poo1.heigth))
 		{
-			const int poo1Xold = poo1X;
-			const int poo1Yold = poo1Y;
-			poo1X = ClampSreenX(poo1X, pooWidth);
-			if (poo1X != poo1Xold)
-			{
-				poo1vx = -poo1vx;
-			}
-			poo1Y = ClampSreenY(poo1Y, pooHieght);
-			if (poo1Y != poo1Yold)
-			{
-				poo1vy = -poo1vy;
-			}
+			poo1.isEaten = true;
 		}
+		if (IsCollidng(dude.x, dude.y, dude.width, dude.height, poo2.x, poo2.y, poo2.width, poo2.heigth))
 		{
-			const int poo2Xold = poo2X;
-			const int poo2Yold = poo2Y;
-			poo2X = ClampSreenX(poo2X, pooWidth);
-			if (poo2X != poo2Xold)
-			{
-				poo2vx = -poo2vx;
-			}
-			poo2Y = ClampSreenY(poo2Y, pooHieght);
-			if (poo2Y != poo2Yold)
-			{
-				poo2vy = -poo2vy;
-			}
-		}
-
-		if (IsCollidng(dudeX, dudeY, dudeWidth, dudeHieght, poo0X, poo0Y, pooWidth, pooHieght))
-		{
-			poo0IsEaten = true;
-		}
-		if (IsCollidng(dudeX, dudeY, dudeWidth, dudeHieght, poo1X, poo1Y, pooWidth, pooHieght))
-		{
-			poo1IsEaten = true;
-		}
-		if (IsCollidng(dudeX, dudeY, dudeWidth, dudeHieght, poo2X, poo2Y, pooWidth, pooHieght))
-		{
-			poo2IsEaten = true;
+			poo2.isEaten = true;
 		}
 	}
 	else
@@ -2870,42 +2831,6 @@ void Game::DrawTitle(int x, int y)
 
 }
 
-int Game::ClampSreenX(int x, int width)
-{
-	const int right = x + width;
-	if (x < 0)
-	{
-		poo0vx = -poo0vx;
-		return 0;
-	}
-	else if (right >=gfx.ScreenWidth)
-	{
-		return (gfx.ScreenWidth - 1) - width;
-	}
-	else
-	{
-		return x;
-	}
-}
-
-int Game::ClampSreenY(int y, int height)
-{
-
-	const int bottom = y + height;
-	if (y < 0)
-	{
-		return 0;
-	}
-	else if (bottom >= gfx.ScreenHeight)
-	{
-		return (gfx.ScreenHeight - 1) - height;
-	}
-	else
-	{
-		return y;
-	}
-}
-
 bool Game::IsCollidng(int x0, int y0, int width0, int height0,
 	                   int x1, int y1, int width1, int height1)
 {
@@ -2929,22 +2854,22 @@ void Game::ComposeFrame()
 	}
 	else
 	{
-		if (poo0IsEaten && poo1IsEaten && poo2IsEaten)
+		if (poo0.isEaten && poo1.isEaten && poo2.isEaten)
 		{
 			DrawGameOver(358, 268);
 		}
-		DrawFace(dudeX, dudeY);
-		if (!poo0IsEaten)
+		DrawFace(dude.x, dude.y);
+		if (!poo0.isEaten)
 		{
-			DrawPoo(poo0X, poo0Y);
+			DrawPoo(poo0.x, poo0.y);
 		}
-		if (!poo1IsEaten)
+		if (!poo1.isEaten)
 		{
-			DrawPoo(poo1X, poo1Y);
+			DrawPoo(poo1.x, poo1.y);
 		}
-		if (!poo2IsEaten)
+		if (!poo2.isEaten)
 		{
-			DrawPoo(poo2X, poo2Y);
+			DrawPoo(poo2.x, poo2.y);
 		}
 	}
 }
